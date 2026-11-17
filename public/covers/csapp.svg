@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#eff8ff"/>
+      <stop offset="1" stop-color="#dceefb"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <circle cx="1010" cy="160" r="210" fill="#ffffff" opacity="0.6"/>
+  <g opacity="0.5" stroke="#8fbdd6" stroke-width="2" fill="none">
+    <rect x="810" y="330" width="280" height="180" rx="14"/>
+    <path d="M810 390h280M870 330v180M950 330v180"/>
+  </g>
+  <g font-family="Cascadia Code, Consolas, monospace" font-size="20" fill="#5d8ba2" opacity="0.9">
+    <text x="72" y="470">objdump -d bomb</text>
+    <text x="72" y="510">gdb ./bomb</text>
+    <text x="72" y="550">make &amp;&amp; ./lab</text>
+  </g>
+  <text x="76" y="112" font-family="Segoe UI, Helvetica, sans-serif" font-size="21" letter-spacing="7" fill="#4f7f94">CS:APP · LAB NOTES</text>
+  <text x="76" y="360" font-family="Segoe UI, Helvetica, sans-serif" font-size="92" font-weight="700" fill="#153845">CS:APP</text>
+  <text x="78" y="408" font-family="Segoe UI, Microsoft YaHei, sans-serif" font-size="28" fill="#5c8496">实验题解合集 · Data Lab / Bomb Lab / Proxy Lab</text>
+</svg>

@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../components/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { projects } from '../data/projects';
+---
+
+<BaseLayout
+  title="项目 · 江建谕"
+  description="GitHub 项目：算法刷题、无人机仿真、社团网站与开发工具。"
+>
+  <div class="container page-body">
+    <header class="page-head">
+      <a class="back-link" href="/">← 返回首页</a>
+      <h1 class="page-title">项目</h1>
+      <p class="page-desc">
+        课程、竞赛和兴趣驱动写下的一些项目。大部分是自用工具，也有一小部分是觉得“应该有这个东西”于是动手做的。
+      </p>
+    </header>
+
+    <div class="project-grid project-grid-2">
+      {projects.map((project) => <ProjectCard project={project} />)}
+    </div>
+  </div>
+</BaseLayout>

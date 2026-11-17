@@ -1,0 +1,235 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../components/BaseLayout.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import ColumnCard from '../components/ColumnCard.astro';
+import NoteList from '../components/NoteList.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { profile, education, awards, running } from '../data/profile';
+import { zhihuPosts } from '../data/zhihu';
+import { projects } from '../data/projects';
+
+const techNotes = (await getCollection('tech')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const column = zhihuPosts.find((post) => post.category === 'tech');
+const solutionColumn = zhihuPosts.find((post) => post.category === 'solutions');
+---
+
+<BaseLayout>
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow">Hello, I'm</span>
+        <h1 class="hero-title">
+          江建谕
+          <span class="hero-en">Jianyu Jiang</span>
+        </h1>
+        <p class="hero-intro">{profile.intro}</p>
+        <p class="hero-loc">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M12 21s7-5.1 7-11a7 7 0 1 0-14 0c0 5.9 7 11 7 11Z"></path>
+            <circle cx="12" cy="10" r="2.6"></circle>
+          </svg>
+          {profile.location}
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href={profile.github} target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"></path>
+            </svg>
+            GitHub
+          </a>
+          <a class="btn btn-ghost" href={profile.zhihu} target="_blank" rel="noopener noreferrer">
+            知乎主页
+          </a>
+          <a class="btn btn-ghost" href={`mailto:${profile.email}`}>Email</a>
+        </div>
+      </div>
+
+      <div class="hero-portrait">
+        <span class="portrait-blob" aria-hidden="true"></span>
+        <img class="avatar" src="/portrait.jpg" alt="江建谕的生活照" width="900" height="1351" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="about">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="section-eyebrow">About</span>
+          <h2 class="section-title">求学、竞赛与跑步</h2>
+          <p class="section-desc">一路从山城到南京，代码和跑道都没落下。</p>
+        </div>
+      </div>
+
+      <div class="about-grid">
+        <div class="panel">
+          <h3 class="panel-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M3 9l9-5 9 5-9 5-9-5Z"></path>
+              <path d="M7 11.5V16c0 1.2 2.2 3 5 3s5-1.8 5-3v-4.5"></path>
+            </svg>
+            求学经历
+          </h3>
+          <div class="timeline">
+            {education.slice(0, 2).map((item) => (
+              <div class="timeline-item">
+                <div class="timeline-period">{item.period}</div>
+                <div class="timeline-school">{item.school}</div>
+                <div class="timeline-degree">{item.stage}</div>
+                {item.detail && <div class="timeline-detail">{item.detail}</div>}
+              </div>
+            ))}
+          </div>
+          <div class="edu-early">
+            {education.slice(2).map((item) => (
+              <div class="edu-early-item">
+                <span class="edu-early-period">{item.period}</span>
+                <span class="edu-early-school">{item.school}</span>
+                <span class="edu-early-stage">{item.stage}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3 class="panel-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z"></path>
+              <path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"></path>
+            </svg>
+            竞赛经历
+            <span class="panel-count">{awards.length} 项</span>
+          </h3>
+          <ul class="award-list">
+            {awards.map((award) => (
+              <li class="award-row">
+                <span class="award-date">{award.date}</span>
+                <span class="award-name">{award.title}</span>
+                <span class={`award award-${award.level}`}>{award.label}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div class="running-panel">
+        <div class="running-copy">
+          <span class="section-eyebrow">Running</span>
+          <h3>跑步经历</h3>
+          <p>{running.intro}</p>
+          <div class="running-stats">
+            {running.stats.map((stat) => (
+              <div class="running-stat-item">
+                <span class="running-stat-value">
+                  {stat.value}
+                  {stat.unit && <em>{stat.unit}</em>}
+                </span>
+                <span class="running-stat-label">{stat.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div class="run-gallery">
+          <div class="run-track">
+            {[...running.photos, ...running.photos].map((photo, index) => (
+              <figure
+                class="run-card"
+                aria-hidden={index >= running.photos.length ? 'true' : undefined}
+              >
+                <img
+                  src={photo.src}
+                  alt=""
+                  decoding="async"
+                  style={photo.position ? `object-position:${photo.position}` : undefined}
+                />
+                <figcaption>{photo.caption}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+
+        <div class="running-races">
+          <h4>比赛经历</h4>
+          <ul>
+            {running.races.map((race) => (
+              <li>
+                <span class="race-date">{race.date}</span>
+                <span class="race-name">{race.name}</span>
+                {race.result && <span class="race-result">{race.result}</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="tech">
+    <div class="container">
+      <SectionHeader
+        eyebrow="Tech"
+        title="技术"
+        desc="平时整理的技术笔记，从 C++、Linux、PA 实验到生成式软件工程。"
+        href="/tech"
+      />
+      <NoteList notes={techNotes} basePath="/tech" />
+
+      {column && (
+        <>
+          <div class="subhead">知乎专栏</div>
+          <ColumnCard post={column} />
+        </>
+      )}
+    </div>
+  </section>
+
+  <section class="section" id="cp">
+    <div class="container">
+      <SectionHeader
+        eyebrow="Competitive Programming"
+        title="算竞"
+        desc="题解专栏、代码模板与保研机试经验，记录算法竞赛里踩过的坑。"
+        href="/cp"
+      />
+      {solutionColumn && (
+        <ColumnCard
+          post={solutionColumn}
+          description="Codeforces 与各类比赛的题解、复盘和思路整理，持续更新。"
+        />
+      )}
+    </div>
+  </section>
+
+  <section class="section" id="projects">
+    <div class="container">
+      <SectionHeader
+        eyebrow="Projects"
+        title="项目"
+        desc="课程之外写的一些东西，代码都在 GitHub 上。"
+        href="/projects"
+      />
+      <div class="project-grid project-grid-2">
+        {projects.map((project) => <ProjectCard project={project} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="agent">
+    <div class="container">
+      <div class="agent-band">
+        <div>
+          <span class="agent-tag"><span class="dot"></span>In progress</span>
+          <h3>Agent 使用轨迹</h3>
+          <p>把日常使用 AI Agent 完成任务的过程整理成可回放的轨迹：任务拆解、工具调用、关键决策与结果。这个模块还在建设中。</p>
+        </div>
+        <a class="btn btn-ghost" href="/agent">看看规划 →</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

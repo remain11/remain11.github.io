@@ -1,0 +1,30 @@
+---
+import { getCollection, render } from 'astro:content';
+import ArticlePage from '../../components/ArticlePage.astro';
+
+export async function getStaticPaths() {
+  const notes = await getCollection('tech');
+  return notes.map((note) => ({
+    params: { slug: note.id },
+    props: { note },
+  }));
+}
+
+const { note } = Astro.props;
+const { Content, headings } = await render(note);
+const toc = headings
+  .filter((heading) => heading.depth >= 2 && heading.depth <= 4)
+  .map(({ depth, slug, text }) => ({ depth, slug, text }));
+---
+
+<ArticlePage
+  title={note.data.title}
+  description={note.data.description}
+  backHref="/tech"
+  backLabel="技术"
+  date={note.data.date}
+  tags={note.data.tags}
+  toc={toc}
+>
+  <Content />
+</ArticlePage>

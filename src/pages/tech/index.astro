@@ -1,0 +1,37 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../components/BaseLayout.astro';
+import NoteList from '../../components/NoteList.astro';
+import ColumnCard from '../../components/ColumnCard.astro';
+import { zhihuPosts } from '../../data/zhihu';
+
+const notes = (await getCollection('tech')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+const columns = zhihuPosts.filter((p) => p.category === 'tech');
+---
+
+<BaseLayout
+  title="技术 · 江建谕"
+  description="技术笔记：Markdown、C++、Linux、PA 实验、生成式软件工程，以及 CS:APP 实验题解专栏。"
+>
+  <div class="container page-body">
+    <header class="page-head">
+      <a class="back-link" href="/">← 返回首页</a>
+      <h1 class="page-title">技术</h1>
+      <p class="page-desc">
+        平时整理的技术笔记，从 C++、Linux、PA 实验到生成式软件工程。长一点的内容放在本地笔记里，成体系的题解放在知乎专栏。
+      </p>
+    </header>
+
+    <div class="subhead">本地笔记</div>
+    {notes.length > 0 ? (
+      <NoteList notes={notes} basePath="/tech" />
+    ) : (
+      <div class="empty">还没有本地笔记，往 src/content/tech/ 里放一份 Markdown 就会出现在这里。</div>
+    )}
+
+    <div class="subhead">知乎专栏</div>
+    {columns.map((post) => <ColumnCard post={post} />)}
+  </div>
+</BaseLayout>

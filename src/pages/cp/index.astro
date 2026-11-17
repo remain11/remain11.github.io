@@ -1,0 +1,78 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../components/BaseLayout.astro';
+import NoteList from '../../components/NoteList.astro';
+import ColumnCard from '../../components/ColumnCard.astro';
+import { zhihuPosts } from '../../data/zhihu';
+import { cpLinks } from '../../data/cp';
+
+const columns = zhihuPosts.filter(
+  (p) => p.category === 'solutions' || p.category === 'knowledge'
+);
+const templates = (await getCollection('templates')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+const experiences = (await getCollection('cpNotes')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const columnDescriptions: Record<string, string> = {
+  solutions: 'Codeforces 与各类比赛的题解、复盘和思路整理，持续更新。',
+  knowledge: '基环树、数位 DP、异或拆位等算法知识整理。',
+};
+---
+
+<BaseLayout
+  title="算竞 · 江建谕"
+  description="算法竞赛：题解、代码模板、保研机试经验与常用链接，包括 ICPC、蓝桥杯和 VJudge 题单。"
+>
+  <div class="container page-body">
+    <header class="page-head">
+      <a class="back-link" href="/">← 返回首页</a>
+      <h1 class="page-title">算竞</h1>
+      <p class="page-desc">
+        算法竞赛相关的题解、模板、经验和常用链接。比赛复盘主要发在知乎，模板则整理成可以直接查用的版本。
+      </p>
+    </header>
+
+    <div class="subhead">知乎专栏</div>
+    <div class="column-stack">
+      {columns.map((post) => (
+        <ColumnCard post={post} description={columnDescriptions[post.category]} />
+      ))}
+    </div>
+
+    <div class="subhead">模版</div>
+    {templates.length > 0 ? (
+      <NoteList notes={templates} basePath="/cp/templates" />
+    ) : (
+      <div class="empty">还没有整理模板。</div>
+    )}
+
+    <div class="subhead">经验</div>
+    {experiences.length > 0 ? (
+      <NoteList notes={experiences} basePath="/cp/notes" />
+    ) : (
+      <div class="empty">还没有经验分享。</div>
+    )}
+
+    <div class="subhead">帖子链接</div>
+    <div class="link-list">
+      {cpLinks.map((link) => (
+        <a
+          class="link-row"
+          href={link.url}
+          target={link.url.startsWith('/') ? undefined : '_blank'}
+          rel={link.url.startsWith('/') ? undefined : 'noopener noreferrer'}
+        >
+          <span class="link-tag">{link.tag}</span>
+          <span class="link-main">
+            <span class="link-name">{link.name}</span>
+            <span class="link-desc">{link.description}</span>
+          </span>
+          <span class="link-arrow" aria-hidden="true">↗</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,41 @@
+---
+import type { ZhihuPost } from '../data/zhihu';
+import { zhihuCategoryLabel } from '../data/zhihu';
+
+interface Props {
+  post: ZhihuPost;
+}
+
+const { post } = Astro.props;
+---
+
+<a
+  class="zhihu-card"
+  href={post.url}
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label={`知乎：${post.title}`}
+>
+  <div class="zhihu-cover-wrap">
+    <img
+      class="zhihu-cover"
+      src={post.cover}
+      alt=""
+      width="1200"
+      height="675"
+      decoding="async"
+    />
+  </div>
+  <div class="zhihu-body">
+    <div class="zhihu-meta">
+      <span class="zhihu-badge">知乎</span>
+      <span>{zhihuCategoryLabel[post.category]}</span>
+      {post.date && <span>· {post.date}</span>}
+    </div>
+    <h3 class="zhihu-title">{post.title}</h3>
+    <div class="zhihu-foot">
+      <span>阅读原文</span>
+      <span class="zhihu-more">去知乎 <span aria-hidden="true">↗</span></span>
+    </div>
+  </div>
+</a>

@@ -1,0 +1,155 @@
+---
+interface TocItem {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: TocItem[];
+  showTitle?: boolean;
+}
+
+const { headings, showTitle = true } = Astro.props;
+
+const items = headings.map((heading, index) => {
+  let parent = -1;
+  for (let j = index - 1; j >= 0; j--) {
+    if (headings[j].depth < heading.depth) {
+      parent = j;
+      break;
+    }
+  }
+  const hasChildren = index + 1 < headings.length && headings[index + 1].depth > heading.depth;
+  return { ...heading, index, parent, hasChildren };
+});
+---
+
+<nav class={`toc${showTitle ? '' : ' toc--plain'}`} aria-label="文章目录">
+  {showTitle && <div class="toc-title">目录</div>}
+  <ul class="toc-tree">
+    {items.map((item) => (
+      <li
+        class={`toc-item toc-d${item.depth}${item.hasChildren ? ' is-collapsed' : ''}`}
+        data-index={item.index}
+        data-parent={item.parent}
+        data-depth={item.depth}
+      >
+        <div class="toc-row">
+          {item.hasChildren ? (
+            <button
+              type="button"
+              class="toc-toggle"
+              aria-expanded="false"
+              aria-label={`展开 ${item.text}`}
+            ></button>
+          ) : (
+            <span class="toc-toggle-spacer" aria-hidden="true"></span>
+          )}
+          <a class="toc-link" href={`#${item.slug}`} data-heading={item.slug}>{item.text}</a>
+        </div>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<script>
+  const trees = document.querySelectorAll<HTMLElement>('.toc-tree');
+
+  trees.forEach((tree) => {
+    const items = Array.from(tree.querySelectorAll<HTMLLIElement>('.toc-item'));
+    if (!items.length) return;
+
+    const byIndex = new Map<number, HTMLLIElement>();
+    items.forEach((item, index) => byIndex.set(index, item));
+
+    const getParent = (item: HTMLLIElement) => {
+      const parentIndex = Number(item.dataset.parent ?? -1);
+      return parentIndex >= 0 ? byIndex.get(parentIndex) ?? null : null;
+    };
+
+    const setExpanded = (item: HTMLLIElement, expanded: boolean) => {
+      item.classList.toggle('is-collapsed', !expanded);
+      const button = item.querySelector<HTMLButtonElement>(':scope > .toc-row > .toc-toggle');
+      if (button) {
+        button.setAttribute('aria-expanded', String(expanded));
+        const label = item.querySelector('.toc-link')?.textContent?.trim() ?? '';
+        button.setAttribute('aria-label', `${expanded ? '折叠' : '展开'} ${label}`);
+      }
+    };
+
+    const updateVisibility = () => {
+      items.forEach((item) => {
+        let hidden = false;
+        let parent = getParent(item);
+        while (parent) {
+          if (parent.classList.contains('is-collapsed')) {
+            hidden = true;
+            break;
+          }
+          parent = getParent(parent);
+        }
+        item.classList.toggle('is-hidden', hidden);
+      });
+    };
+
+    tree.querySelectorAll<HTMLButtonElement>('.toc-toggle').forEach((button) => {
+      button.addEventListener('click', () => {
+        const item = button.closest<HTMLLIElement>('.toc-item');
+        if (!item) return;
+        setExpanded(item, item.classList.contains('is-collapsed'));
+        updateVisibility();
+      });
+    });
+
+    const links = Array.from(tree.querySelectorAll<HTMLAnchorElement>('.toc-link'));
+    const headings = links.map((link) => document.getElementById(link.dataset.heading ?? ''));
+
+    let ticking = false;
+
+    const updateActive = () => {
+      const threshold = 110;
+      let active = 0;
+      headings.forEach((heading, index) => {
+        if (heading && heading.getBoundingClientRect().top <= threshold) active = index;
+      });
+
+      links.forEach((link, index) => link.classList.toggle('is-active', index === active));
+
+      const activeItem = links[active]?.closest<HTMLLIElement>('.toc-item') ?? null;
+      if (activeItem) setExpanded(activeItem, true);
+      let parent = activeItem ? getParent(activeItem) : null;
+      while (parent) {
+        if (parent.classList.contains('is-collapsed')) setExpanded(parent, true);
+        parent = getParent(parent);
+      }
+      updateVisibility();
+
+      const sidebar = tree.closest<HTMLElement>('.article-sidebar');
+      const activeLink = links[active];
+      if (sidebar && activeLink) {
+        const sidebarRect = sidebar.getBoundingClientRect();
+        const linkRect = activeLink.getBoundingClientRect();
+        if (linkRect.top < sidebarRect.top + 8) {
+          sidebar.scrollTop += linkRect.top - sidebarRect.top - 8;
+        } else if (linkRect.bottom > sidebarRect.bottom - 8) {
+          sidebar.scrollTop += linkRect.bottom - sidebarRect.bottom + 8;
+        }
+      }
+    };
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        updateActive();
+        ticking = false;
+      });
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    updateVisibility();
+    updateActive();
+  });
+</script>

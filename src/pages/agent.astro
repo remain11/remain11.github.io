@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../components/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Agent 轨迹 · 江建谕"
+  description="记录日常使用 AI Agent 的任务拆解、工具调用与关键决策，以可回放的轨迹形式呈现。"
+>
+  <div class="container page-body">
+    <header class="page-head">
+      <a class="back-link" href="/">← 返回首页</a>
+      <h1 class="page-title">Agent 使用轨迹</h1>
+      <p class="page-desc">
+        我日常会用 AI Agent 处理写代码、查资料、整理信息一类的任务。这个模块想把“怎么把一件事交给 Agent 做完”的过程留下来。
+      </p>
+    </header>
+
+    <section class="agent-hero">
+      <span class="agent-tag"><span class="dot"></span>In progress</span>
+      <h2>轨迹还在录制中</h2>
+      <p>
+        第一版会从真实任务出发：保留目标、拆解步骤、调用过的工具、中间产物和最终结果，尽量让每条轨迹都可以被复现，而不只是一段聊天记录。
+      </p>
+
+      <div class="agent-plan">
+        <div class="agent-plan-item">
+          <span>01 / TASK</span>
+          <h3>任务拆解</h3>
+          <p>把一句模糊的需求拆成可执行、可验证的步骤。</p>
+        </div>
+        <div class="agent-plan-item">
+          <span>02 / TOOLS</span>
+          <h3>工具调用</h3>
+          <p>记录搜索、读写文件、运行命令等关键动作与参数。</p>
+        </div>
+        <div class="agent-plan-item">
+          <span>03 / REPLAY</span>
+          <h3>轨迹回放</h3>
+          <p>按时间线回看决策与结果，标注失败和重试的位置。</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

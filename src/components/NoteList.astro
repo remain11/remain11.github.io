@@ -1,0 +1,45 @@
+---
+interface NoteLike {
+  id: string;
+  data: {
+    title: string;
+    description: string;
+    date: Date;
+    tags: string[];
+  };
+}
+
+interface Props {
+  notes: NoteLike[];
+  basePath: string;
+}
+
+const { notes, basePath } = Astro.props;
+
+const formatDate = (date: Date) =>
+  new Date(date)
+    .toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit' })
+    .replaceAll('/', '.');
+---
+
+<div class="note-list">
+  {notes.map((note) => (
+    <a class="note-item" href={`${basePath}/${note.id}/`}>
+      <time class="note-date" datetime={new Date(note.data.date).toISOString()}>
+        {formatDate(note.data.date)}
+      </time>
+      <div class="note-main">
+        <h3 class="note-title">{note.data.title}</h3>
+        <p class="note-desc">{note.data.description}</p>
+      </div>
+      <div class="note-side">
+        <div class="tags">
+          {note.data.tags.slice(0, 2).map((tag) => (
+            <span class="tag">{tag}</span>
+          ))}
+        </div>
+        <span class="note-arrow" aria-hidden="true">→</span>
+      </div>
+    </a>
+  ))}
+</div>

@@ -1,0 +1,61 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import TocTree from './TocTree.astro';
+
+interface TocItem {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  title: string;
+  description: string;
+  backHref: string;
+  backLabel: string;
+  date: Date;
+  tags: string[];
+  toc: TocItem[];
+}
+
+const { title, description, backHref, backLabel, date, tags, toc } = Astro.props;
+
+const dateLabel = new Date(date).toLocaleDateString('zh-CN', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout title={`${title} · ${backLabel}`} description={description}>
+  <article>
+    <div class="container article-layout">
+      <aside class="article-sidebar">
+        {toc.length > 0 && <TocTree headings={toc} />}
+      </aside>
+
+      <div class="article-content">
+        <header class="article-head">
+          <a class="back-link" href={backHref}>← {backLabel}</a>
+          <div class="article-meta">
+            <time datetime={new Date(date).toISOString()}>{dateLabel}</time>
+            {tags.map((tag) => <span class="tag">{tag}</span>)}
+          </div>
+          <h1 class="article-title">{title}</h1>
+          <p class="article-desc">{description}</p>
+        </header>
+
+        {toc.length > 0 && (
+          <details class="toc-mobile">
+            <summary>目录（{toc.length} 节）</summary>
+            <TocTree headings={toc} showTitle={false} />
+          </details>
+        )}
+
+        <div class="article-body prose">
+          <slot />
+        </div>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
